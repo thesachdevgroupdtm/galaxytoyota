@@ -1,6 +1,8 @@
+
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+// Fix: Import React to resolve missing React namespace for FormEvent type
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { X, CheckCircle, Smartphone, User, Mail, Car, MapPin } from 'lucide-react';
 import { VEHICLES } from '@/lib/inventory';

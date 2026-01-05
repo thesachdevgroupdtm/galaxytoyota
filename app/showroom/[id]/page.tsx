@@ -1,6 +1,8 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
+// Fix: Import React to resolve missing React namespace for MouseEvent type
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';

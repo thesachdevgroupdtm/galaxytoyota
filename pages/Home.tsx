@@ -1,298 +1,339 @@
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, ShieldCheck, Zap, Award, Star, Settings, Phone, Calendar, ArrowRight, MapPin, Clock } from 'lucide-react';
 import { Container } from '../components/ui/Container';
 import { VEHICLES } from '../lib/inventory';
 import { GALAXY_LOCATIONS } from '../lib/locations';
+import { 
+  ChevronRight, ChevronLeft, Zap, ShieldCheck, 
+  Award, ArrowRight, Settings, Phone, Star, 
+  Car, Users, Clock, Sparkles
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { LeadPopup } from '../components/LeadPopup';
 
-export const Home: React.FC = () => {
+const HERO_BANNERS = [
+  { img: '/assets/banner1.jpg', title: 'DRIVE TO PLAY', subtitle: 'Experience the All New Camry Strong Hybrid Electric Vehicle', cta: 'Explore Camry' },
+  { img: '/assets/banner2.jpg', title: 'AWESOME REWARDS', subtitle: 'GST Benefits up to ₹4.36 Lakh* on Selected Models', cta: 'Get Best Offer' },
+  { img: '/assets/banner4.jpg', title: 'THE KING OF EARTH', subtitle: 'Land Cruiser 300 - 70 Years of Unrivaled Off-Road Legacy', cta: 'Conquer Now' },
+  { img: '/assets/banner3.jpg', title: 'HILUX BLACK EDITION', subtitle: 'Unbreakable Toughness Meets Premium Lifestyle', cta: 'Book Adventure' },
+  { img: '/assets/banner5.jpg', title: 'URBAN CRUISER TAISOR', subtitle: 'Make Your Way with Dynamic Crossover Performance', cta: 'Explore Taisor' },
+];
+
+export const Home = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % HERO_BANNERS.length);
+    }, 7000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const openLeadPopup = () => {
+    window.dispatchEvent(new CustomEvent('open-lead-popup'));
+  };
+
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % HERO_BANNERS.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + HERO_BANNERS.length) % HERO_BANNERS.length);
+
   return (
-    <div className="w-full">
-      {/* 1. HERO SLIDER */}
-      <section className="relative h-screen min-h-[600px] w-full bg-toyota-black overflow-hidden pt-20">
-        <div className="absolute inset-0 opacity-80">
-          <img 
-            src="/assets/banners/hycross-banner.jpg" 
-            className="w-full h-full object-cover" 
-            alt="Toyota Innova Hycross" 
-          />
-        </div>
-        <Container className="relative z-10 h-full flex flex-col justify-center text-white">
-          <div className="max-w-4xl space-y-8 animate-fade-up">
-            <div className="flex items-center gap-3">
-              <div className="h-1 w-12 bg-toyota-red"></div>
-              <h4 className="text-toyota-red font-black uppercase tracking-[0.5em] text-xs">Galaxy Elite Experience</h4>
+    <div className="w-full relative bg-white">
+      <LeadPopup />
+
+      {/* 1. PREMIUM HERO BANNER SLIDER */}
+      <section className="relative h-[100svh] w-full bg-black overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={currentSlide}
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            <img 
+              src={HERO_BANNERS[currentSlide].img} 
+              alt={HERO_BANNERS[currentSlide].title}
+              className="w-full h-full object-cover opacity-90"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent md:hidden" />
+          </motion.div>
+        </AnimatePresence>
+
+        <Container className="relative h-full flex flex-col justify-center text-white z-10">
+          <motion.div 
+            key={currentSlide + '-content'}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="max-w-4xl space-y-6 md:space-y-10"
+          >
+            <div className="flex items-center gap-4">
+              <div className="h-1 w-16 bg-toyota-red" />
+              <h4 className="text-toyota-red font-black uppercase tracking-[0.5em] text-[10px] md:text-xs">
+                OFFICIAL PLATINUM DEALER DELHI NCR
+              </h4>
             </div>
-            <h1 className="text-6xl md:text-8xl lg:text-[100px] font-display font-black uppercase leading-[0.85] tracking-tighter">
-              DRIVE THE <br/> <span className="text-toyota-red">IMPOSSIBLE</span>
+            
+            <h1 className="text-5xl sm:text-7xl md:text-[110px] font-display font-black uppercase leading-[0.85] tracking-tighter drop-shadow-2xl">
+              {HERO_BANNERS[currentSlide].title.split(' ')[0]} <br/> 
+              <span className="text-toyota-red">{HERO_BANNERS[currentSlide].title.split(' ').slice(1).join(' ')}</span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-200 font-light max-w-2xl leading-relaxed">
-              New Delhi's premier destination for the legendary Toyota fleet. 40 years of uncompromised reliability and service excellence.
+            
+            <p className="text-lg md:text-2xl text-gray-200 font-light max-w-2xl leading-relaxed md:border-l-4 md:border-toyota-red md:pl-10">
+              {HERO_BANNERS[currentSlide].subtitle}. Join the legacy of 5,00,000+ happy Toyota owners across North India.
             </p>
-            <div className="flex flex-wrap gap-6 pt-8">
-              <Link to="/showroom" className="btn-toyota flex items-center gap-3 !px-12 !py-5 text-base shadow-2xl">
-                Explore Range <ChevronRight size={20}/>
+            
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-6 pt-6 md:pt-10">
+              <Link 
+                to="/book-test-drive" 
+                className="bg-toyota-red text-white px-10 md:px-14 py-4 md:py-6 font-black uppercase tracking-widest text-[10px] md:text-xs hover:bg-white hover:text-black transition-all shadow-2xl text-center"
+              >
+                Book Test Drive
               </Link>
-              <Link to="/locations" className="bg-white/10 backdrop-blur-md border border-white/20 px-12 py-5 font-bold uppercase tracking-widest text-base hover:bg-white hover:text-toyota-black transition-all">
-                Find Showroom
-              </Link>
+              <button 
+                onClick={openLeadPopup}
+                className="bg-white/10 backdrop-blur-md border border-white/20 px-10 md:px-14 py-4 md:py-6 font-black uppercase tracking-widest text-[10px] md:text-xs hover:bg-white hover:text-black transition-all text-center"
+              >
+                Request Quote
+              </button>
             </div>
-          </div>
+          </motion.div>
         </Container>
+
+        {/* Custom Navigation dots */}
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+          {HERO_BANNERS.map((_, i) => (
+            <button 
+              key={i} 
+              onClick={() => setCurrentSlide(i)}
+              className={`h-1.5 transition-all duration-500 rounded-full ${currentSlide === i ? 'w-12 bg-toyota-red' : 'w-4 bg-white/30'}`}
+            />
+          ))}
+        </div>
+
+        {/* Manual Navigation Arrows */}
+        <div className="hidden md:flex absolute bottom-12 right-12 gap-4 z-20">
+          <button 
+            onClick={prevSlide} 
+            className="p-5 bg-white/5 hover:bg-toyota-red text-white transition-all backdrop-blur-md border border-white/10 rounded-full group"
+          >
+            <ChevronLeft size={28} className="group-hover:scale-110 transition-transform"/>
+          </button>
+          <button 
+            onClick={nextSlide} 
+            className="p-5 bg-white/5 hover:bg-toyota-red text-white transition-all backdrop-blur-md border border-white/10 rounded-full group"
+          >
+            <ChevronRight size={28} className="group-hover:scale-110 transition-transform"/>
+          </button>
+        </div>
       </section>
 
-      {/* 2. SHOWROOM GRID */}
-      <section className="bg-toyota-lightGrey py-24">
+      {/* 2. FEATURED MODELS GRID */}
+      <section className="bg-white py-24 md:py-40">
         <Container>
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-20 md:mb-32 gap-6">
             <div className="max-w-2xl">
-              <h2 className="text-5xl lg:text-7xl font-display font-black uppercase tracking-tighter mb-4 leading-none">
-                PREMIUM <span className="text-toyota-red">SHOWROOM</span>
+              <h2 className="text-5xl md:text-8xl font-display font-black uppercase tracking-tighter mb-4 leading-none">
+                PREMIUM <span className="text-toyota-red">FLEET</span>
               </h2>
-              <p className="text-gray-400 font-bold uppercase tracking-widest text-xs border-l-4 border-toyota-red pl-6">
-                Complete 2024 Toyota India Fleet - Authorized NCR Inventory
+              <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] border-l-4 border-toyota-red pl-6">
+                Explore the official 2024 Toyota India Inventory at Galaxy Hubs
               </p>
             </div>
-            <Link to="/showroom" className="text-toyota-red font-black uppercase text-xs tracking-[0.3em] flex items-center group">
-              View All Models <ArrowRight size={16} className="ml-4 group-hover:translate-x-3 transition-transform"/>
+            <Link to="/showroom" className="text-toyota-red font-black uppercase text-[10px] tracking-[0.3em] flex items-center group mb-2">
+              View Entire Inventory <ArrowRight size={16} className="ml-4 group-hover:translate-x-3 transition-transform"/>
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {VEHICLES.slice(0, 8).map((car) => (
-              <div key={car.id} className="group bg-white relative overflow-hidden flex flex-col shadow-sm hover:shadow-2xl transition-all duration-700">
-                <div className="h-60 overflow-hidden bg-white p-8 flex items-center justify-center relative">
-                  <img src={car.mainImage} alt={car.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-1000" />
-                  <div className="absolute top-4 left-4 text-[10px] font-black uppercase tracking-widest text-toyota-red bg-toyota-lightGrey px-3 py-1">
-                    {car.type}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16 md:gap-y-24">
+            {VEHICLES.map((car) => (
+              <Link key={car.id} to={`/vehicle/${car.id}`} className="group flex flex-col">
+                <div className="h-64 relative mb-10 flex items-center justify-center p-8 bg-gray-50 rounded-sm overflow-hidden group-hover:bg-gray-100 transition-colors">
+                  <img 
+                    src={car.mainImage} 
+                    alt={car.name} 
+                    className="h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" 
+                  />
+                  <div className="absolute top-4 left-4 text-[8px] font-black uppercase tracking-widest text-toyota-red bg-white px-3 py-1.5 shadow-sm">
+                    {car.type} Series
                   </div>
                 </div>
-                <div className="p-8 border-t border-gray-50 flex flex-col flex-grow">
-                  <h3 className="text-2xl font-display font-black uppercase text-toyota-black mb-4 tracking-tight leading-tight">{car.name}</h3>
-                  <div className="flex justify-between items-center text-[10px] font-bold text-gray-400 mb-8 uppercase tracking-widest">
-                    <span>Starts {car.priceRange.split(' ')[1]} {car.priceRange.split(' ')[2]}</span>
-                    <span className="flex items-center gap-1 text-toyota-red"><Zap size={10}/> {car.mileage}</span>
+                <h3 className="text-2xl md:text-3xl font-display font-black uppercase text-black mb-3 group-hover:text-toyota-red transition-colors flex justify-between items-center">
+                  {car.name}
+                  <ChevronRight size={20} className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all"/>
+                </h3>
+                <div className="flex justify-between items-center text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-t border-gray-100 pt-6">
+                  <div className="space-y-1">
+                    <span className="block text-[8px] text-gray-300">Showroom Range From</span>
+                    <span className="text-black font-black">{car.priceRange.split(' ')[1]} {car.priceRange.split(' ')[2]}</span>
                   </div>
-                  <Link to={`/vehicle/${car.id}`} className="mt-auto block w-full text-center bg-toyota-black text-white py-4 font-black uppercase text-[10px] tracking-[0.3em] hover:bg-toyota-red transition-all">
-                    Detail Specs
-                  </Link>
+                  <div className="text-right space-y-1">
+                    <span className="block text-[8px] text-gray-300">Efficiency</span>
+                    <span className="flex items-center justify-end gap-1 text-toyota-red"><Zap size={12}/> {car.mileage}</span>
+                  </div>
                 </div>
+              </Link>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* 3. WHY CHOOSE GALAXY TOYOTA */}
+      <section className="py-24 md:py-40 bg-gray-50 border-y border-gray-100">
+        <Container>
+          <div className="text-center mb-24 md:mb-32">
+            <h2 className="text-5xl md:text-8xl font-display font-black uppercase tracking-tighter mb-6 leading-none">
+              THE <span className="text-toyota-red">GALAXY</span> EDGE
+            </h2>
+            <p className="text-gray-500 font-bold uppercase tracking-[0.3em] text-[10px] md:text-xs">
+              40 Years of Uncompromised Excellence • Authorised Platinum Partner
+            </p>
+            <div className="h-2 w-24 bg-toyota-red mx-auto mt-10" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-24">
+            {[
+              { 
+                icon: <Award size={64} />, 
+                title: "PLATINUM STATUS", 
+                desc: "Consistently recognized by Toyota Kirloskar Motor for achieving the highest standards in sales and service satisfaction." 
+              },
+              { 
+                icon: <ShieldCheck size={64} />, 
+                title: "100% TRANSPARENCY", 
+                desc: "Direct factory pricing with no hidden costs. Every transaction is digitally documented for your absolute peace of mind." 
+              },
+              { 
+                icon: <Users size={64} />, 
+                title: "FAMILY OF 500K+", 
+                desc: "Serving generations of families in Delhi NCR since 1984 with the world-renowned Toyota Hospitality." 
+              }
+            ].map((feat, i) => (
+              <div key={i} className="group text-center px-6">
+                <div className="text-toyota-red mx-auto mb-10 group-hover:scale-110 transition-transform duration-500">
+                  {feat.icon}
+                </div>
+                <h3 className="text-3xl font-display font-black uppercase mb-6 tracking-tight group-hover:text-toyota-red transition-colors">
+                  {feat.title}
+                </h3>
+                <p className="text-gray-500 text-sm leading-relaxed uppercase font-bold tracking-widest">
+                  {feat.desc}
+                </p>
               </div>
             ))}
           </div>
         </Container>
       </section>
 
-      {/* 3. NETWORK SECTION */}
-      <section className="py-24 bg-white">
-        <Container>
-           <div className="text-center mb-20">
-              <h2 className="text-5xl lg:text-7xl font-display font-black uppercase mb-4 tracking-tighter">DELHI NCR <span className="text-toyota-red">NETWORK</span></h2>
-              <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">Authorised Sales, Service, U-Trust & SPARSH hubs</p>
-           </div>
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {GALAXY_LOCATIONS.slice(0, 3).map((loc) => (
-                 <div key={loc.id} className="bg-toyota-lightGrey p-10 group hover:shadow-2xl transition-all border-b-8 border-transparent hover:border-toyota-red">
-                    <div className="flex flex-wrap gap-2 mb-6">
-                       {loc.services.map(t => (
-                          <span key={t} className="px-3 py-1 bg-white text-[8px] font-black uppercase tracking-widest text-toyota-red border border-toyota-red/20">{t}</span>
-                       ))}
-                    </div>
-                    <h4 className="text-3xl font-display font-black uppercase mb-4">{loc.name}</h4>
-                    <p className="text-gray-500 text-sm font-medium leading-relaxed mb-10 h-16 overflow-hidden">{loc.address}</p>
-                    <div className="flex justify-between items-center border-t border-gray-200 pt-8">
-                       <span className="text-lg font-display font-black text-toyota-black">{loc.phones[0]}</span>
-                       <Link to="/locations" className="text-[10px] font-black uppercase tracking-widest text-toyota-red">Get Map</Link>
-                    </div>
-                 </div>
-              ))}
-           </div>
+      {/* 4. SERVICES OVERVIEW */}
+      <section className="py-24 md:py-40 bg-black text-white relative overflow-hidden">
+        <img 
+          src="/assets/cars/hycross-int.webp" 
+          alt="Galaxy Toyota Official Service" 
+          className="absolute inset-0 w-full h-full object-cover opacity-10" 
+        />
+        <Container className="relative z-10">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-12 mb-24 md:mb-32">
+             <h2 className="text-5xl md:text-8xl font-display font-black uppercase tracking-tighter">
+               COMPLETE <span className="text-toyota-red">CARE</span>
+             </h2>
+             <Link to="/service" className="text-white font-black uppercase text-[10px] tracking-[0.5em] border-b-4 border-toyota-red pb-3 hover:text-toyota-red transition-all">
+               View Comprehensive Service Menu
+             </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
+            {[
+              { title: 'EM60 EXPRESS', desc: 'Authorised periodic maintenance by dual-technician teams in exactly 60 minutes.', icon: <Clock/> },
+              { title: 'SPARSH BODYSHOP', desc: 'World-class accidental repair hub with computerized paint matching and factory finish.', icon: <Sparkles/> },
+              { title: 'TFS FINANCE', desc: 'Toyota Financial Services: Low interest rates, minimal documentation, and instant approval.', icon: <Award/> },
+              { title: 'TOYOTA U-TRUST', desc: 'The most reliable destination to trade-in or buy certified pre-owned Toyota cars.', icon: <ShieldCheck/> },
+            ].map((s, i) => (
+              <div key={i} className="bg-white/5 backdrop-blur-xl p-10 md:p-14 border border-white/10 hover:bg-toyota-red transition-all duration-700 group cursor-pointer">
+                <div className="text-toyota-red group-hover:text-white mb-10 transform scale-150 origin-left transition-transform duration-500">
+                  {s.icon}
+                </div>
+                <h4 className="text-2xl md:text-3xl font-display font-black uppercase mb-4 tracking-tighter">
+                  {s.title}
+                </h4>
+                <p className="text-[10px] text-gray-400 group-hover:text-white uppercase font-bold tracking-[0.2em] leading-relaxed transition-colors">
+                  {s.desc}
+                </p>
+              </div>
+            ))}
+          </div>
         </Container>
       </section>
 
-      {/* 4. SERVICE EXCELLENCE */}
-      <section className="py-24 bg-toyota-charcoal text-white overflow-hidden">
-        <Container className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-          <div className="relative">
-             <img src="/assets/banners/service-hero.jpg" className="w-full h-[600px] object-cover shadow-2xl grayscale" alt="Service Hub" />
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-toyota-red/90 p-12 backdrop-blur-md">
-                <div className="text-7xl font-display font-black leading-none">60</div>
-                <div className="text-xs font-black uppercase tracking-[0.3em]">Minutes Express</div>
+      {/* 5. LOCATIONS PREVIEW */}
+      <section className="py-24 md:py-40 bg-white">
+        <Container>
+          <div className="flex flex-col lg:flex-row gap-20 lg:gap-32">
+             <div className="lg:w-1/3 space-y-12">
+                <h2 className="text-5xl md:text-8xl font-display font-black uppercase tracking-tighter leading-[0.8] mb-8">
+                  VISIT <br/> <span className="text-toyota-red">GALAXY</span>
+                </h2>
+                <p className="text-gray-600 text-lg leading-relaxed font-medium border-l-4 border-toyota-red pl-10">
+                  With over 16 state-of-the-art facilities across New Delhi, Noida, and NCR, world-class Toyota hospitality is always nearby.
+                </p>
+                <Link to="/locations" className="inline-flex bg-black text-white px-14 py-6 font-black uppercase tracking-widest text-[10px] hover:bg-toyota-red transition-all shadow-xl group">
+                  All Authorized Locations <ChevronRight className="ml-4 group-hover:translate-x-2 transition-transform" size={16}/>
+                </Link>
+             </div>
+
+             <div className="lg:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+                {GALAXY_LOCATIONS.slice(0, 4).map(loc => (
+                  <div key={loc.id} className="p-10 md:p-14 bg-gray-50 border border-gray-100 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] transition-all duration-500 group relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-toyota-red scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-700"/>
+                    <h5 className="text-[9px] font-black uppercase tracking-widest text-toyota-red mb-6">Authorised {loc.category} Hub</h5>
+                    <h4 className="text-3xl font-display font-black uppercase mb-6 tracking-tight leading-none">
+                      {loc.name.split('-')[1]?.trim() || loc.name}
+                    </h4>
+                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-10 h-10 overflow-hidden leading-relaxed">
+                      {loc.address}
+                    </p>
+                    <div className="flex justify-between items-center pt-10 border-t border-gray-200">
+                      <span className="text-base font-black tracking-tight">{loc.phones[0]}</span>
+                      <Link to={`/locations/${loc.slug}`} className="text-toyota-red group-hover:translate-x-2 transition-transform">
+                        <ChevronRight size={24}/>
+                      </Link>
+                    </div>
+                  </div>
+                ))}
              </div>
           </div>
-          <div>
-            <h4 className="text-toyota-red font-black uppercase tracking-[0.4em] text-[10px] mb-6">Toyota Service Masterclass</h4>
-            <h2 className="text-5xl lg:text-7xl font-display font-black uppercase tracking-tighter leading-[0.9] mb-10 text-white">
-              FASTEST <br/> <span className="text-toyota-red">WORKSHOP</span>
-            </h2>
-            <p className="text-gray-400 text-lg leading-loose font-medium mb-12">
-              Our Okhla and Noida service hubs are equipped with dual-technician bays. Experience the EM60 - Full periodic maintenance in exactly 60 minutes or less.
-            </p>
-            <div className="grid grid-cols-2 gap-8 mb-12">
-               <div className="space-y-4">
-                  <div className="h-0.5 w-12 bg-toyota-red"></div>
-                  <h5 className="text-xl font-display font-black uppercase">Genuine Parts</h5>
-                  <p className="text-xs text-gray-500 uppercase font-bold tracking-widest">100% Factory Sourced</p>
-               </div>
-               <div className="space-y-4">
-                  <div className="h-0.5 w-12 bg-white"></div>
-                  <h5 className="text-xl font-display font-black uppercase">T-Gloss Studio</h5>
-                  <p className="text-xs text-gray-500 uppercase font-bold tracking-widest">Ceramic Protection</p>
-               </div>
-            </div>
-            <Link to="/service" className="btn-toyota !bg-white !text-toyota-black hover:!bg-toyota-red hover:!text-white">Book Appointment</Link>
-          </div>
         </Container>
       </section>
 
-      {/* 5. U-TRUST */}
-      <section className="py-24 bg-toyota-lightGrey">
-         <Container className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-            <div>
-               <h4 className="text-toyota-red font-black uppercase tracking-[0.4em] text-[10px] mb-6">Certified Pre-Owned</h4>
-               <h2 className="text-5xl lg:text-7xl font-display font-black uppercase tracking-tighter mb-10 leading-none">
-                  TOYOTA <br/> <span className="text-toyota-red">U-TRUST</span>
+      {/* 6. FINAL CTA */}
+      <section className="bg-toyota-red py-24 md:py-40 text-white relative overflow-hidden">
+         <div className="absolute top-0 right-0 w-1/3 h-full bg-black/10 skew-x-[-20deg] translate-x-32" />
+         <Container className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
+            <div className="max-w-4xl text-center lg:text-left">
+               <h4 className="text-black font-black uppercase tracking-[0.5em] text-[10px] mb-8">Take the Next Step</h4>
+               <h2 className="text-6xl md:text-[110px] font-display font-black uppercase tracking-tighter mb-8 leading-none">
+                 EXPERIENCE <br/> <span className="text-black">QUALITY.</span>
                </h2>
-               <p className="text-gray-600 text-lg leading-loose font-medium mb-12">
-                  Exchange any brand car for a new Toyota. Every U-Trust car undergoes a rigorous 203-point inspection and comes with up to 2 years of warranty.
+               <p className="text-xl md:text-3xl font-light opacity-90 leading-relaxed max-w-2xl">
+                 Experience the legendary Quality, Durability, and Reliability (QDR) of your preferred Toyota firsthand.
                </p>
-               <div className="flex gap-12">
-                  <div>
-                     <div className="text-5xl font-display font-black text-toyota-black">203</div>
-                     <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Quality Checks</div>
-                  </div>
-                  <div>
-                     <div className="text-5xl font-display font-black text-toyota-black">2Y</div>
-                     <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Max Warranty</div>
-                  </div>
-               </div>
-               <Link to="/u-trust" className="btn-toyota mt-12 inline-block">Exchange Car Now</Link>
             </div>
-            <div className="relative">
-               <img src="/assets/banners/u-trust-used-cars.jpg" className="w-full h-auto object-cover shadow-2xl rounded-sm" alt="U-Trust" />
-            </div>
-         </Container>
-      </section>
-
-      {/* 6. HAPPY DELIVERIES */}
-      <section className="py-24 bg-white">
-        <Container>
-          <div className="text-center mb-16">
-            <h2 className="text-5xl lg:text-7xl font-display font-black uppercase mb-4 tracking-tighter">OUR <span className="text-toyota-red">CUSTOMERS</span></h2>
-            <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">Join the ever-growing Galaxy Family</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map(num => (
-              <div key={num} className="h-80 overflow-hidden relative group">
-                <img src={`/assets/customer/delivery-${num}.jpg`} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" alt="Delivery" />
-                <div className="absolute bottom-4 left-4 bg-toyota-red text-white p-2 text-[8px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Happy Galaxy Family</div>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      {/* 7. OFFERS SECTION */}
-      <section className="py-24 bg-toyota-black relative overflow-hidden">
-        <img 
-          src="/assets/banners/festive-banner.jpg" 
-          className="absolute inset-0 w-full h-full object-cover opacity-40" 
-          alt="Festive Offer"
-        />
-        <Container className="relative z-10 text-white text-center">
-          <h2 className="text-5xl lg:text-[100px] font-display font-black uppercase tracking-tighter leading-none mb-10">
-            YEAR END <span className="text-toyota-red">BENEFITS</span>
-          </h2>
-          <p className="text-2xl font-light mb-12 max-w-2xl mx-auto">GST benefits up to ₹ 4.36 Lakh* available on selected models. Direct showroom support for corporate employees.</p>
-          <Link to="/offers" className="btn-toyota !bg-white !text-toyota-black hover:!bg-toyota-red hover:!text-white">Claim Rewards Now</Link>
-        </Container>
-      </section>
-
-      {/* 8. EMI CALCULATOR */}
-      <section className="py-24 bg-toyota-lightGrey">
-         <Container className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-            <div>
-               <h2 className="text-5xl lg:text-7xl font-display font-black uppercase mb-8 leading-tight tracking-tighter">FINANCE <br/> <span className="text-toyota-red">YOUR DREAM</span></h2>
-               <p className="text-gray-400 text-lg leading-relaxed mb-12 font-bold uppercase tracking-widest">Toyota Financial Services Competitive Rates</p>
-               <div className="grid grid-cols-2 gap-8">
-                  <div className="p-8 bg-white border-t-4 border-toyota-red">
-                     <Award className="text-toyota-red mb-4" size={32}/>
-                     <h5 className="text-xl font-display font-black uppercase">Low EMI</h5>
-                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">Flexible Tenure</p>
-                  </div>
-                  <div className="p-8 bg-white border-t-4 border-toyota-red">
-                     <Zap className="text-toyota-red mb-4" size={32}/>
-                     <h5 className="text-xl font-display font-black uppercase">Fast Pay</h5>
-                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">Zero Doc Fee</p>
-                  </div>
-               </div>
-            </div>
-            <div className="bg-white p-12 shadow-2xl">
-               <h3 className="text-4xl font-display font-black uppercase mb-12 tracking-tight text-center">EMI CALCULATOR</h3>
-               <div className="space-y-12">
-                  <div className="space-y-4">
-                     <div className="flex justify-between font-black uppercase text-[10px] tracking-widest">
-                        <span>Loan Amount</span>
-                        <span className="text-toyota-red font-display text-lg">₹ 15,00,000</span>
-                     </div>
-                     <input type="range" className="w-full h-1 bg-gray-200 accent-toyota-red appearance-none cursor-pointer" min="500000" max="5000000" step="100000" />
-                  </div>
-                  <div className="space-y-4">
-                     <div className="flex justify-between font-black uppercase text-[10px] tracking-widest">
-                        <span>Tenure (Months)</span>
-                        <span className="text-toyota-red font-display text-lg">60 Months</span>
-                     </div>
-                     <input type="range" className="w-full h-1 bg-gray-200 accent-toyota-red appearance-none cursor-pointer" min="12" max="84" step="12" />
-                  </div>
-                  <div className="pt-10 border-t border-gray-100 flex flex-col items-center">
-                     <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Estimated EMI</div>
-                     <div className="text-7xl font-display font-black text-toyota-red tracking-tighter leading-none">₹ 28,450*</div>
-                  </div>
-                  <button className="btn-toyota w-full py-6 text-base shadow-xl">Get Pre-Approval</button>
-               </div>
-            </div>
-         </Container>
-      </section>
-
-      {/* 9. GLOBAL MAP */}
-      <section className="h-[500px] w-full bg-toyota-black relative">
-        <iframe 
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3501.921315802377!2d77.1001!3d28.631!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d0363!2zR2FsYXh5IFRveW90YQ!5e0!3m2!1sen!2sin!4v1" 
-          width="100%" 
-          height="100%" 
-          style={{ border: 0, filter: 'grayscale(100%) invert(90%) contrast(150%)' }} 
-          allowFullScreen 
-          loading="lazy"
-        ></iframe>
-        <Container className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-          <div className="bg-white p-12 shadow-2xl max-w-sm border-t-8 border-toyota-red pointer-events-auto">
-            <h4 className="text-4xl font-display font-black uppercase mb-8 leading-none">VISIT <span className="text-toyota-red">US</span></h4>
-            <div className="space-y-6 mb-10">
-              <div className="flex gap-4">
-                <MapPin className="text-toyota-red shrink-0" size={20}/>
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-500">Okhla Ind. Estate Phase III, Delhi 110020</p>
-              </div>
-              <div className="flex gap-4">
-                <Phone className="text-toyota-red shrink-0" size={20}/>
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-500">011-4040-4040</p>
-              </div>
-            </div>
-            <Link to="/locations" className="btn-toyota w-full !py-4 block text-center">Full Network</Link>
-          </div>
-        </Container>
-      </section>
-
-      {/* 10. NEWSLETTER */}
-      <section className="bg-toyota-red py-16 text-white">
-         <Container className="flex flex-col lg:flex-row items-center justify-between gap-12">
-            <div>
-               <h2 className="text-4xl font-display font-black uppercase tracking-tighter mb-2">JOIN GALAXY <span className="text-toyota-black">INSIGHTS</span></h2>
-               <p className="text-lg opacity-80">Be the first to know about new Toyota launches in NCR.</p>
-            </div>
-            <div className="flex w-full lg:w-auto gap-4">
-               <input type="email" placeholder="Email Address" className="px-8 py-4 bg-white text-toyota-black outline-none font-bold text-sm w-full lg:w-80" />
-               <button className="bg-toyota-black text-white px-8 py-4 font-black uppercase tracking-widest text-xs hover:bg-white hover:text-toyota-red transition-all">Join</button>
+            <div className="flex flex-col sm:flex-row gap-6 w-full lg:w-auto">
+              <Link 
+                to="/book-test-drive" 
+                className="bg-black text-white px-16 py-7 font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all shadow-2xl text-center"
+              >
+                Schedule Doorstep Drive
+              </Link>
+              <button 
+                onClick={openLeadPopup}
+                className="bg-white text-toyota-red px-16 py-7 font-black uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-all shadow-2xl text-center"
+              >
+                Enquire Now
+              </button>
             </div>
          </Container>
       </section>

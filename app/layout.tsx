@@ -1,4 +1,6 @@
 
+// Fix: Import React to resolve missing React namespace for ReactNode type
+import React from "react";
 import type { Metadata } from "next";
 import { Inter, Oswald } from "next/font/google";
 import "./globals.css";

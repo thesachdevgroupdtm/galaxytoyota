@@ -1,102 +1,99 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Phone, MapPin, ChevronDown, Car, Settings, ShieldCheck } from 'lucide-react';
+import { Menu, X, Phone, MapPin, ChevronDown } from 'lucide-react';
 import { Container } from './ui/Container';
 
-export const Header: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+export const Header = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const pathname = location.pathname;
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => setIsMenuOpen(false), [location.pathname]);
-
-  const navItems = [
-    { name: 'Showroom', path: '/showroom' },
-    { name: 'Service', path: '/service' },
-    { name: 'U-Trust', path: '/u-trust' },
-    { name: 'Finance', path: '/finance' },
-    { name: 'Offers', path: '/offers' },
-    { name: 'Locations', path: '/locations' },
+  const navLinks = [
+    { name: 'Showroom', href: '/showroom' },
+    { name: 'Service', href: '/service' },
+    { name: 'Offers', href: '/offers' },
+    { name: 'Finance', href: '/finance' },
+    { name: 'About', href: '/about' },
+    { name: 'Contact', href: '/contact' },
   ];
 
+  const isHome = pathname === '/';
+
   return (
-    <header className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-xl py-2' : 'bg-white/95 backdrop-blur-md py-4 border-b border-gray-100'}`}>
+    <header className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 ${scrolled ? 'bg-white shadow-xl py-2' : 'bg-transparent py-6'}`}>
       {/* Utility Strip */}
-      <div className={`bg-toyota-black text-white text-[10px] font-black uppercase tracking-[0.2em] py-2 transition-all overflow-hidden ${isScrolled ? 'h-0 opacity-0' : 'h-8 opacity-100'}`}>
-        <Container className="flex justify-between items-center h-full">
+      <div className={`bg-black text-white text-[9px] font-black uppercase tracking-[0.3em] py-2 transition-all overflow-hidden ${scrolled ? 'h-0 opacity-0' : 'h-8 opacity-100'}`}>
+        <Container className="flex justify-between items-center">
           <div className="flex gap-8">
-            <span className="flex items-center gap-2"><Phone size={12} className="text-toyota-red"/> 011-4040-4040 (Okhla)</span>
-            <span className="hidden md:flex items-center gap-2"><Phone size={12} className="text-toyota-red"/> 0120-4040-404 (Noida)</span>
+            <span className="flex items-center gap-2"><Phone size={10} className="text-toyota-red"/> 011-4040-4040 (Okhla)</span>
+            <span className="hidden md:flex items-center gap-2"><MapPin size={10} className="text-toyota-red"/> Delhi | Noida | Gurgaon</span>
           </div>
           <div className="flex gap-6">
-            <Link to="/about" className="hover:text-toyota-red">Legacy</Link>
-            <Link to="/careers" className="hover:text-toyota-red">Careers</Link>
+            <Link to="/about" className="hover:text-toyota-red transition-colors">Legacy</Link>
+            <Link to="/u-trust" className="hover:text-toyota-red transition-colors">U-Trust Exchange</Link>
           </div>
         </Container>
       </div>
 
-      <Container className="flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex flex-col">
-            <span className="text-2xl font-display font-black tracking-tighter leading-none text-toyota-black">
-              GALAXY <span className="text-toyota-red">TOYOTA</span>
-            </span>
-            <span className="text-[8px] font-black uppercase tracking-[0.3em] opacity-40">Authorised Toyota Partner</span>
+      <Container className="flex justify-between items-center mt-2">
+        <Link to="/" className="flex items-center gap-4 group">
+          <div className={`relative h-10 w-40 transition-all ${!scrolled && isHome ? 'brightness-0 invert' : ''}`}>
+            <img 
+              src="/assets/logo1.png" 
+              alt="Galaxy Toyota Official Logo" 
+              className="h-full object-contain"
+            />
           </div>
         </Link>
 
-        {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-10">
-          {navItems.map((item) => (
+          {navLinks.map((link) => (
             <Link 
-              key={item.name} 
-              to={item.path}
-              className={`text-[12px] font-extrabold uppercase tracking-widest transition-all relative group ${location.pathname === item.path ? 'text-toyota-red' : 'text-toyota-black hover:text-toyota-red'}`}
+              key={link.name} 
+              to={link.href}
+              className={`text-[11px] font-black uppercase tracking-widest transition-all relative group ${!scrolled && isHome ? 'text-white' : 'text-black'} hover:text-toyota-red`}
             >
-              {item.name}
-              <span className={`absolute -bottom-2 left-0 h-0.5 bg-toyota-red transition-all ${location.pathname === item.path ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+              {link.name}
+              <span className={`absolute -bottom-2 left-0 h-0.5 bg-toyota-red transition-all ${pathname === link.href ? 'w-full' : 'w-0 group-hover:w-full'}`} />
             </Link>
           ))}
-          <Link to="/book-test-drive" className="btn-toyota !py-3 !px-8 text-xs shadow-lg hover:shadow-toyota-red/30">
+          <Link to="/book-test-drive" className="bg-toyota-red text-white px-8 py-3.5 font-black uppercase tracking-widest text-[9px] hover:bg-black transition-all shadow-xl">
             Book Test Drive
           </Link>
         </nav>
 
-        {/* Mobile Toggle */}
-        <button className="lg:hidden p-2 text-toyota-black" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          {isMenuOpen ? <X size={28}/> : <Menu size={28}/>}
+        <button className={`lg:hidden p-2 transition-colors ${!scrolled && isHome ? 'text-white' : 'text-black'}`} onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? <X size={28}/> : <Menu size={28}/>}
         </button>
       </Container>
 
-      {/* Mobile Drawer */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 top-[60px] bg-white z-40 p-6 flex flex-col gap-6 overflow-y-auto animate-fade-up">
-          {navItems.map((item) => (
-            <Link 
-              key={item.name} 
-              to={item.path} 
-              className="text-2xl font-display font-black uppercase border-b border-gray-100 pb-4 flex items-center justify-between"
-            >
-              {item.name}
-              <ChevronDown className="-rotate-90 text-toyota-red" size={20}/>
-            </Link>
-          ))}
-          <Link to="/book-test-drive" className="btn-toyota w-full text-center py-5 text-lg mt-4">
-            Request Callback
-          </Link>
-          <div className="mt-auto pt-10 border-t border-gray-100 grid grid-cols-1 gap-6">
-            <div className="flex flex-col gap-2">
-              <span className="text-[10px] font-black uppercase text-gray-400">Delhi Hotline</span>
-              <span className="text-lg font-bold">011-4040-4040</span>
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="fixed inset-0 top-0 bg-white z-[200] p-8 flex flex-col animate-in fade-in slide-in-from-top-4">
+          <div className="flex justify-between items-center mb-16">
+            <div className="relative h-10 w-40">
+              <img src="/assets/logo1.png" alt="Galaxy Toyota" className="h-full object-contain" />
             </div>
+            <button onClick={() => setIsOpen(false)}><X size={32}/></button>
           </div>
+          <div className="flex flex-col gap-8">
+            {navLinks.map((link) => (
+              <Link key={link.name} to={link.href} onClick={() => setIsOpen(false)} className="text-3xl font-display font-black uppercase border-b-4 border-gray-50 pb-4">
+                {link.name}
+              </Link>
+            ))}
+          </div>
+          <Link to="/book-test-drive" onClick={() => setIsOpen(false)} className="bg-toyota-red text-white text-center py-6 mt-12 font-black uppercase tracking-widest">
+            Book Appointment
+          </Link>
         </div>
       )}
     </header>
